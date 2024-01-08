@@ -1,0 +1,17 @@
+{
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "deploy": "$npm_execpath run build && wrangler pages deploy ./dist --commit-dirty=true"
+  },
+  "dependencies": {
+    "hono": "./hono-3.12.0-patched.tgz"
+  },
+  "devDependencies": {
+    "@hono/vite-dev-server": "^0.3.4",
+    "tsx": "^3.12.2",
+    "vite": "^5.0.11",
+    "wrangler": "^3.22.3"
+  }
+}
