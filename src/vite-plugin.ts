@@ -1,6 +1,6 @@
 import { Plugin, createServer } from 'vite'
 import type { Hono } from 'hono'
-import { toSsg } from 'hono/ssg'
+import { toSSG } from 'hono/ssg'
 import fs from 'fs/promises'
 
 type BuildConfig = {
@@ -45,7 +45,11 @@ const HonoSSGBuild = (options?: HonoSSGOptions): Plugin => {
         throw new Error(`Failed to find a named export "default" from ${entry}`)
       }
 
-      files = await toSsg(app, fs, { dir: outDir })
+      const result = await toSSG(app, fs, { dir: outDir })
+
+      if (!result.success) {
+        throw result.error
+      }
 
       return {
         root: outDir,
@@ -53,7 +57,7 @@ const HonoSSGBuild = (options?: HonoSSGOptions): Plugin => {
         build: {
           outDir: options?.build?.outDir ?? defaultOptions.build.outDir,
           rollupOptions: {
-            input: [...files]
+            input: result.files ? [...result.files] : []
           },
           emptyOutDir: true
         }

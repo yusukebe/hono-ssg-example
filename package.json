@@ -3,10 +3,11 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "preview": "wrangler pages dev ./dist",
     "deploy": "$npm_execpath run build && wrangler pages deploy ./dist --commit-dirty=true"
   },
   "dependencies": {
-    "hono": "./hono-3.12.0-patched.tgz"
+    "hono": "./hono-4.0.0-rc.0-patched.tgz"
   },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.3.4",
