@@ -11,7 +11,6 @@
   },
   "devDependencies": {
     "@hono/vite-dev-server": "^0.3.4",
-    "tsx": "^3.12.2",
     "vite": "^5.0.11",
     "wrangler": "^3.22.3"
   }
