@@ -1,65 +1,78 @@
 import { Hono } from 'hono'
 import { ssgParams } from 'hono/ssg'
-import { jsxRenderer } from 'hono/jsx-renderer'
+import { renderer } from './renderer'
+import { getShops, getShop } from './app'
 
 const app = new Hono()
 
-app.all(
-  '*',
-  jsxRenderer(({ children }) => {
-    return (
-      <html>
-        <link href="/static/style.css" rel="stylesheet" />
-        <body>
-          <header>
-            <a href="/">top</a> &nbsp;
-            <a href="/foo">foo</a> &nbsp;
-            <a href="/posts">posts</a>
-          </header>
-          <main>{children}</main>
-        </body>
-      </html>
-    )
-  })
-)
+app.use(renderer)
 
 app.get('/', (c) => {
-  return c.render(<h1>Hello Hono🔥</h1>)
+  return c.render(<h1>😘🍜</h1>)
 })
 
-app.get('/foo', (c) => {
-  return c.render(<h1>Foo</h1>)
-})
-
-type Post = {
-  id: string
-}
-
-const posts: Post[] = [{ id: 'hello' }, { id: 'morning' }, { id: 'night' }]
-
-app.get('/posts', (c) => {
+app.get('/about', (c) => {
   return c.render(
-    <ul>
-      {posts.map((post) => {
-        return (
-          <li>
-            <a href={`/posts/${post.id}`}>{post.id}</a>
-          </li>
-        )
-      })}
-    </ul>
+    <div>
+      <h1>これは何？</h1>
+      <p>このページは🍜についてのページです</p>
+    </div>
+  )
+})
+
+app.get('/shops', async (c) => {
+  const shops = await getShops()
+  return c.render(
+    <div>
+      <h1>ラーメン屋さん</h1>
+      <ul>
+        {shops.map((shop) => {
+          return (
+            <li>
+              <a href={`/shops/${shop.id}`}>{shop.name}</a>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 })
 
 app.get(
-  '/posts/:id',
-  ssgParams(() => posts),
-  (c) => {
-    return c.render(<h1>{c.req.param('id')}</h1>)
+  '/shops/:id',
+  ssgParams(async () => {
+    const shops = await getShops()
+    return shops.map((shop) => ({ id: shop.id }))
+  }),
+  async (c) => {
+    const shop = await getShop(c.req.param('id'))
+    if (!shop) {
+      return c.notFound()
+    }
+    return c.render(
+      <div>
+        <h1>{shop.name}</h1>
+        {shop.photos ? (
+          <p>
+            {shop.photos.map((photo) => {
+              return (
+                <p>
+                  <img src={photo.url} width={photo.width / 5} height={photo.height / 5} />
+                  <br />
+                  <small>Photo by {photo.authorId}</small>
+                </p>
+              )
+            })}
+          </p>
+        ) : (
+          <></>
+        )}
+      </div>
+    )
   }
 )
 
-app.get('/status', ssgParams(false), (c) => c.json({ ok: true }))
+app.notFound((c) => c.text('🍜 not found', 404))
 
 app.get('/404', (c) => c.notFound())
 

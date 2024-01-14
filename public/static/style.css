@@ -2,3 +2,10 @@ body {
   font-family: Arial, sans-serif;
   padding: 1rem;
 }
+
+footer {
+  border-top: 1px solid #ccc;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  font-size: 0.7rem;
+}
